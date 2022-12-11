@@ -1,0 +1,141 @@
+---
+title: "MA-678 Final Project"
+author: "JingjianGao"
+date: "2022-11-30"
+output:
+  pdf_document: default
+  html_document: default
+---
+
+```{r echo=FALSE, warning=FALSE,message=FALSE}
+library(ggplot2)
+library(tidyverse)
+library(tibble)
+library(rstanarm)
+library(lme4)
+library(ggridges)
+```
+# Abstract
+
+### This is a final project report on which McDonald’s food item has the highest nutritional value using Rstudio. The purpose of this project is to come up with a list of McDonald’s food items that have high protein contents with relatively low calories. This report is gonna be useful for making my future client’s diet plans that include junk food as options to help them lose weight.
+
+# Introduction
+
+### McDonald's is probably the most popular fast food restaurant in the world. However, it is also considered to be unhealthy for its high calories and fat content. Even though it is a well known factor for causing obesity in the general population, people would still consume McDonald’s on a daily basis because of its cheap costs and tastiness. As someone who is passionate about fitness and healthy life style, I want to help obese people to lose weight in order to change their lives completely. However, few of them would be willing to switch their diet from junk foods to salads and healthy diets immediately. Therefore, I want to find out which burger/food item from McDonald’s menu has a relatively healthy nutritional fact. This will help those extreme obese client to reduce body weight without cutting off their favorite food in a sudden. This will be an extremely meaningful finding to me once I become a personal trainer. I will be able to create personal diet plans which include McDonald’s foods as an option for my client based on the conclusions I got.
+
+
+# Method
+
+### I did a data analysis on the “Nutrition Facts for McDonald's Menu” dataset using R and Rstudio. I split the original dataset into several subsets for easier regression fitting. I tried fitting several regression using different methods. Then I made several simple plots/graphs using the ggplot2 package with explanations below each graph. I focused on breakfast, beef & pork items, and Chicken & Fish items.
+### Even though certain nutritional factors may seem to be important including sugar, protein, and fat, in the end, it's just calories in calories out when you think about losing weight. I also tried to make a food combination that meets the nutrition requirement on a 2000 daily calorie intake standard. This combination is going to be useful when considering the next steps.
+
+
+
+
+
+
+
+# Results:
+```{r echo=FALSE}
+menu <- read.csv("menu.csv")
+# 24 variables and 260 obeservations
+
+```
+
+## Protein vs Calories
+
+```{r echo=FALSE}
+proteinreg <- glm(Calories~Protein,data=menu)
+
+ggplot(proteinreg,aes(x=Protein, y=Calories))+
+  geom_point()+
+  geom_smooth(method=glm)
+
+```
+### As we can see from the plot, there is a linear relationship between the amount of protein in the product and the total calories. However, since each gram of protein has only 4, McDonald's definitely put a lot of other unhealthy stuff in their products to have that high of calories.
+### We need to consider other factors as well. 
+
+## Protein with other factors vs Calories
+```{r echo=FALSE}
+proteinreg2 <- stan_glm(Calories~Protein+Carbohydrates+Total.Fat,data=menu,refresh=0)
+plot(proteinreg2)
+```
+### This graph shows the universal fact that each gram of protein is approximately 4 calories, carbs is about the same while fat has 8 calories per gram. 
+
+
+## Breakfast
+
+```{r echo=FALSE}
+breakfast <- subset(menu, Category=="Breakfast")
+
+ggplot(breakfast,aes(x=Item,y=Calories))+
+  geom_col()+
+  theme(axis.text.x = element_text(angle = 90, hjust = 1))
+
+```
+### Simple Bar graph gets the job done. We can see that egg muffins, oatmeals, hash browns have relatively low calorie level. If the client choose these foods instead of the hotcakes, they are gonna feel full with lower calories intake.
+
+## Beef & Pork
+```{r echo=FALSE}
+beef <-subset(menu, Category=="Beef & Pork")
+
+ggplot(beef,aes(x=Item,y=Calories))+
+  geom_col()+
+  theme(axis.text.x = element_text(angle = 90, hjust = 1))
+
+
+```
+### There are not many things you can do when it comes to burger since they are all high in calories. But a plain hamburger has relatively 400 calories less than a double quarter pound burger with cheese. Getting rid of the cheese and bacon so you can each more with same amount of calorie intake.
+
+## Chicken & Fish
+```{r echo=FALSE}
+chicken <- subset(menu, Category=="Chicken & Fish")
+
+ggplot(chicken,aes(x=Item,y=Calories))+
+  geom_col()+
+  theme(axis.text.x = element_text(angle = 90, hjust = 1))
+
+
+```
+### Chicken & fish usually contains a good amount of protein with lower fat levels compared to beef and pork ones. If you want McNugget, get a small portion instead of 40 pieces, they are truly calorie bombs.
+
+
+
+
+## Snacks & Sides
+```{r echo=FALSE}
+sides <-subset(menu, Category == "Snacks & Sides")
+
+ggplot(sides,aes(x=Item,y=Calories))+
+  geom_col()+
+  theme(axis.text.x = element_text(angle = 90, hjust = 1))
+
+
+```
+### Replace your fries with some fresh apple slices and Salads. 
+
+## Desserts
+```{r echo=FALSE}
+dessert <- subset(menu, Category == "Desserts")
+
+ggplot(dessert,aes(x=Item,y=Calories))+
+  geom_col()+
+  theme(axis.text.x = element_text(angle = 90, hjust = 1))
+
+```
+### Get an Icecream Cone instead of Sundae please.
+
+## Beverages
+```{r echo=FALSE}
+beverage <- subset(menu, Category == "Beverages")
+ggplot(beverage,aes(x=Item,y=Calories))+
+  geom_col()+
+  theme(axis.text.x = element_text(angle = 90, hjust = 1))
+```
+### It's pretty obvious that most of the beverages are high in sugar and calories. But there are replacements like Diet Coke. It's a great option to choose when you want to eat more calories from food instead of drinks. Zero Calorie Diet Sodas are the best.
+
+
+# Discussion
+
+### Based on the Analysis we did, we were able to find out low calorie food options from McDonald, since obese people will likely to have a daily calorie intake around 4000, by switching their high calorie foods to the one we found. They will have a calorie deficit without even noticing it. 
+### There are a lot more things to consider about other than calories if you really want to dig deep into it. The next step would be trying to find out the ratio between carbs, protein and fat in each product. The perfect ratio between these three factors should be 5:3:2, which means, a healthy diet should be consisted with 50% Carbohydrates, 30% protein, and 20% fat. Using this idea and further analysis. We will be able to figure out which food from McDonald's is considered to be the best for optimal nutrition balance. 
